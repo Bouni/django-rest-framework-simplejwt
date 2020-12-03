@@ -37,7 +37,10 @@ class TokenViewBase(generics.GenericAPIView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
 
-        response = Response(serializer.validated_data, status=status.HTTP_200_OK)
+        if api_settings.AUTH_COOKIE:
+            response = Response({}, status=status.HTTP_200_OK)
+        else:
+            response = Response(serializer.validated_data, status=status.HTTP_200_OK)
 
         if api_settings.AUTH_COOKIE:
             csrf.get_token(self.request)
